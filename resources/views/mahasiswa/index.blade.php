@@ -15,11 +15,14 @@
                     </div>
                 @endif
 
-                <div class="mb-4">
-                    <a href="{{ route('mahasiswa.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        + Tambah Mahasiswa
-                    </a>
-                </div>
+                {{-- HANYA ADMIN YANG BISA TAMPILKAN TOMBOL TAMBAH --}}
+                @if (Auth::user()->role === 'admin')
+                    <div class="mb-4">
+                        <a href="{{ route('mahasiswa.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            + Tambah Mahasiswa
+                        </a>
+                    </div>
+                @endif
 
                 <div class="overflow-x-auto">
                     <table class="min-w-full bg-white border border-gray-200">
@@ -40,13 +43,19 @@
                                     <td class="py-2 px-4 border-r">{{ $mhs->program_studi }}</td>
                                     <td class="py-2 px-4 border-r">{{ $mhs->nomor_hp }}</td>
                                     <td class="py-2 px-4 text-center">
-                                        <form action="{{ route('mahasiswa.destroy', $mhs->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data?')">
-                                            <a href="{{ route('mahasiswa.show', $mhs->id) }}" class="text-green-600 hover:underline mr-2">Detail</a>
+                                        <!-- SEMUA USER (ADMIN & MEMBER) BISA LIHAT DETAIL -->
+                                        <a href="{{ route('mahasiswa.show', $mhs->id) }}" class="text-green-600 hover:underline mr-2">Detail</a>
+
+                                        <!-- HANYA ADMIN YANG BISA EDIT DAN HAPUS -->
+                                        @if (Auth::user()->role === 'admin')
                                             <a href="{{ route('mahasiswa.edit', $mhs->id) }}" class="text-blue-600 hover:underline mr-2">Edit</a>
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:underline">Hapus</button>
-                                        </form>
+                                            
+                                            <form action="{{ route('mahasiswa.destroy', $mhs->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus data?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-600 hover:underline">Hapus</button>
+                                            </form>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty
